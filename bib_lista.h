@@ -3,7 +3,6 @@
 
 struct topo {                       // <-- PILHA DE IGREDIENTEAS
     int tam;
-    struct nodo_simples *inicio;
     struct nodo_simples *fim;
     struct nodo_simples *cabeca;
 };
@@ -16,7 +15,6 @@ struct nodo_simples {
 struct lista_dupla {              // <-- LISTA DE PEDIDOS
     int tam;
     struct nodo_dupla *cabeca;
-    struct nodo_dupla *inicio;
     struct nodo_dupla *fim;
 };
 

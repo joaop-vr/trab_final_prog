@@ -3,8 +3,6 @@
 #include <time.h>
 #include <string.h>
 
-
-
 #include "bib_fila.h"
 #include "bib_lista.h"
 #include "bib_pilha.h" 
@@ -192,6 +190,7 @@ void Imprimir(char mapa[7][23], struct lista_dupla Fila_pedidos, struct desempen
     system("cls");
     int row, column;
     for (row = 0; row < 7; row++) {
+        printf("                     ");
         for (column = 0; column < 23; column++) {
                 printf("%c", mapa[row][column]);
         }
@@ -314,7 +313,7 @@ void destroiRefeicao (struct topo *Pilha_igredientes) {
         int i = 1;
         while (Pilha_igredientes->tam > 0) {
             apagar = Pilha_igredientes->fim;
-            aux = Pilha_igredientes->inicio;
+            aux = Pilha_igredientes->cabeca;
             while (i <= Pilha_igredientes->tam) {
                 aux = aux->prox;
                 i++;
@@ -325,13 +324,11 @@ void destroiRefeicao (struct topo *Pilha_igredientes) {
         };
         Pilha_igredientes->tam = 0;
         Pilha_igredientes->cabeca = NULL;
-        Pilha_igredientes->inicio = NULL;
         Pilha_igredientes->fim = NULL;
     }
     else if (Pilha_igredientes->tam == 1) {
         Pilha_igredientes->tam = 0;
         Pilha_igredientes->cabeca = NULL;
-        Pilha_igredientes->inicio = NULL;
         Pilha_igredientes->fim = NULL;
 
     }
@@ -339,13 +336,13 @@ void destroiRefeicao (struct topo *Pilha_igredientes) {
 }
 
 int verificaPedido(struct topo *Pilha_igredientes, struct lista_dupla *Fila_pedidos) {
-    printf("\nCodigo: %i\n",Fila_pedidos->inicio->codigo);
-    switch (Fila_pedidos->inicio->codigo) {
+    printf("\nCodigo: %i\n",Fila_pedidos->cabeca->codigo);
+    switch (Fila_pedidos->cabeca->codigo) {
 
         case 1: {      //X-Burguer
             char igredientes[4] = {"pHQP"};
             int i;
-            struct nodo_simples *aux = Pilha_igredientes->inicio;
+            struct nodo_simples *aux = Pilha_igredientes->cabeca;
             for (i = 0; i < 4; i++) {
                 if (igredientes[i] != aux->igrediente)
                     return -1;
@@ -356,7 +353,7 @@ int verificaPedido(struct topo *Pilha_igredientes, struct lista_dupla *Fila_pedi
         case 2: {      //X-Salada
             char igredientes[5] = {"pHQSP"};
             int i;
-            struct nodo_simples *aux = Pilha_igredientes->inicio;
+            struct nodo_simples *aux = Pilha_igredientes->cabeca;
             for (i = 0; i < 5; i++) {
                 if (igredientes[i] != aux->igrediente)
                     return -1;
@@ -367,7 +364,7 @@ int verificaPedido(struct topo *Pilha_igredientes, struct lista_dupla *Fila_pedi
         case 3: {      //Combo 1
             char igredientes[6] = {"pHQPFR"};
             int i;
-            struct nodo_simples *aux = Pilha_igredientes->inicio;
+            struct nodo_simples *aux = Pilha_igredientes->cabeca;
             for (i = 0; i < 6; i++) {
                 if (igredientes[i] != aux->igrediente)
                     return -1;
@@ -378,7 +375,7 @@ int verificaPedido(struct topo *Pilha_igredientes, struct lista_dupla *Fila_pedi
         case 4: {      //Combo 2
             char igredientes[7] = {"pHQSPFR"};
             int i;
-            struct nodo_simples *aux = Pilha_igredientes->inicio;
+            struct nodo_simples *aux = Pilha_igredientes->cabeca;
             for (i = 0; i < 7; i++) {
                 if (igredientes[i] != aux->igrediente)
                     return -1;
@@ -389,7 +386,7 @@ int verificaPedido(struct topo *Pilha_igredientes, struct lista_dupla *Fila_pedi
         case 5: {      //Vegetariano
             char igredientes[5] = {"pQPFR"};
             int i;
-            struct nodo_simples *aux = Pilha_igredientes->inicio;
+            struct nodo_simples *aux = Pilha_igredientes->cabeca;
             for (i = 0; i < 5; i++) {
                 if (igredientes[i] != aux->igrediente)
                     return -1;
@@ -400,7 +397,7 @@ int verificaPedido(struct topo *Pilha_igredientes, struct lista_dupla *Fila_pedi
         case 6: {      //Vegano
             char igredientes[3] = {"SFR"};
             int i;
-            struct nodo_simples *aux = Pilha_igredientes->inicio;
+            struct nodo_simples *aux = Pilha_igredientes->cabeca;
             for (i = 0; i < 3; i++) {
                 if (igredientes[i] != aux->igrediente)
                     return -1;

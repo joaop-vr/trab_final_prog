@@ -15,7 +15,6 @@ void Criar_nodo_fila (struct lista_dupla *P, struct nodo_dupla *novo) {
         novo->ant = NULL;
         novo->prox = P->cabeca;
         P->cabeca = novo;
-        P->inicio = novo;
         P->fim = novo;
         P->tam++;
     }   
@@ -38,15 +37,14 @@ void Excluir_nodo_fila (struct lista_dupla *P) {
     }
     /*Excluindo o ultimo nodo restante*/
     else if (P->tam == 1) {
-        free(P->inicio);
+        free(P->cabeca);
         P->cabeca = NULL;
         P->tam--;
     }
     /*Excluindo primeiro nodo*/
     else {
-        P->inicio->prox->ant = NULL;
-        P->inicio = P->inicio->prox;
-        P->cabeca = P->inicio;
+        P->cabeca->prox->ant = NULL;
+        P->cabeca = P->cabeca->prox;
         P->tam--;
     }
 }
