@@ -2,16 +2,85 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <unistd.h>
 
-
+#define ANSI_COLOR_RED      "\x1b[31m" //cores em ANSI utilizadas 
+#define ANSI_COLOR_RESET     "\e[0;37m"
 
 #include "bib_fila.h"
 #include "bib_lista.h"
 #include "bib_pilha.h" 
 #include "bib_main.h"
 
+void Layout() {                         
+    char mapa[17][118] = {{'=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','='},
+                         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','#',' ',' ','#','#',' ','#','#',' ',' ',' ','#','#',' ','#','#','#','#',' ',' ','#','#','#','#',' ','#','#','#','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+                         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','#',' ',' ','#','#',' ','#','#','#',' ',' ','#','#',' ','#','#',' ','#','#',' ','#','#',' ',' ',' ','#','#',' ','#','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+                         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','#',' ',' ','#','#',' ','#','#','#','#',' ','#','#',' ','#','#',' ','#','#',' ','#','#','#','#',' ','#','#',' ','#','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+                         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','#',' ',' ','#','#',' ','#','#',' ','#','#','#','#',' ','#','#',' ','#','#',' ','#','#','#','#',' ','#','#','#','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+                         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','#',' ',' ','#','#',' ','#','#',' ',' ','#','#','#',' ','#','#',' ','#','#',' ','#','#',' ',' ',' ','#','#',' ','#','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+                         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','#','#','#',' ',' ','#','#',' ',' ',' ','#','#',' ','#','#','#','#',' ',' ','#','#','#','#',' ','#','#',' ',' ','#','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+                         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+                         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+                         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','#','#','#','#','#',' ',' ','#','#','#','#',' ',' ',' ','#','#','#','#',' ',' ','#','#',' ',' ','#','#',' ','#','#','#','#',' ','#','#','#','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+                         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','#',' ',' ','#','#',' ','#','#',' ',' ','#','#',' ','#','#',' ',' ','#','#',' ','#','#',' ','#','#',' ',' ','#','#',' ',' ',' ','#','#',' ','#','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+                         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','#',' ',' ',' ',' ',' ','#','#',' ',' ','#','#',' ','#','#',' ',' ','#','#',' ','#','#','#','#',' ',' ',' ','#','#','#','#',' ','#','#',' ','#','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+                         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','#',' ',' ',' ',' ',' ','#','#',' ',' ','#','#',' ','#','#',' ',' ','#','#',' ','#','#','#','#',' ',' ',' ','#','#','#','#',' ','#','#',' ','#','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+                         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','#',' ',' ','#','#',' ','#','#',' ',' ','#','#',' ','#','#',' ',' ','#','#',' ','#','#',' ','#','#',' ',' ','#','#',' ',' ',' ','#','#',' ','#','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+                         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','#','#','#','#','#',' ',' ','#','#','#','#',' ',' ',' ','#','#','#','#',' ',' ','#','#',' ',' ','#','#',' ','#','#','#','#',' ','#','#','#','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+                         {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '},
+                         {'=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','=','='}};     
+    
+    /*38 colunas de vazio, 38 colunas de letra, 38 colunas de vazio*/ 
+    
+    int row;
+    int column;
+    
+    
+    int i = 0;
+    int cont_column_min = 0;
+    int cont_column_max = 25;
+    while (i <= 57) {
+        for (row = 0; row < 17; row++) {
+            for (column = cont_column_min; column < cont_column_max; column++) {
+                printf(ANSI_COLOR_RED"%c ", mapa[row][column]);
+                printf(ANSI_COLOR_RESET);
+            }
+            printf("\n");
+        }
+        cont_column_min++;
+        cont_column_max++;
+        i++;
+        usleep(100000);
+        system("clear");
+    }
+}
 
+int Game_mode () {
 
+    char output;
+    printf("\n----------------------------------------------------------\n");
+    printf("    Voce deseja o modo infinito? [Y/N] ");
+    scanf("%c", &output);
+    switch (output) {
+    case 'n':
+        return 0;
+        break;
+    case 'N':
+        return 0;
+        break; 
+    case 'y':
+        return 1;
+        break;
+    case 'Y':
+        return 1;
+        break;   
+    default:
+        printf("\nErro: esposta invalida");
+        int saida = Game_mode();
+        return saida;
+    }
+}
 
 int Sortear_pedido () {
     int x = rand() % 6;
@@ -55,14 +124,16 @@ void Preencher_pedido (struct nodo_dupla *pedido, int sorteado, int i) {
             break;
     }
 }
-void Criar_pedidos (int *num_pedidos, struct lista_dupla *Fila_pedidos) {
+void Criar_pedidos (int *num_pedidos, struct lista_dupla *Fila_pedidos, int mode) {
     
-    int novo_num_pedidos;
-    printf("\n----------------------------------------------------------\n");
-    printf("    Informe o numero de pedidos a serem processados: ");
-    scanf("%i", &novo_num_pedidos);
-    *num_pedidos = novo_num_pedidos;
-    
+    if (mode == 0) {
+        int novo_num_pedidos;
+        printf("\n----------------------------------------------------------\n");
+        printf("    Informe o numero de pedidos a serem processados: ");
+        scanf("%i", &novo_num_pedidos);
+        *num_pedidos = novo_num_pedidos;
+    }
+
     int i;
     srand(time(NULL));
     for (i = 1; i <= *num_pedidos; i++) {
@@ -71,13 +142,20 @@ void Criar_pedidos (int *num_pedidos, struct lista_dupla *Fila_pedidos) {
         int sorteado = Sortear_pedido();      // <-- sorteia um numero de 1 a 6 (menu de opções de lanches)
         Preencher_pedido(pedido, sorteado, i);
     }
+}
 
-    
+void Reabastecer_pedido (int *num_pedidos, struct lista_dupla *Fila_pedidos) {
+    srand(time(NULL));
+    struct nodo_dupla *pedido = malloc(sizeof(struct nodo_dupla));
+    Criar_nodo_fila(Fila_pedidos, pedido);
+    int sorteado = Sortear_pedido();      // <-- sorteia um numero de 1 a 6 (menu de opções de lanches)
+    Fila_pedidos->tam = Fila_pedidos->tam + 1;
+    Preencher_pedido(pedido, sorteado, Fila_pedidos->tam);
 }
 
 int Verificar_fim (struct desempenho Status) {
     if ((Status.num_pedidos == Status.num_erros + Status.num_exito) && Status.num_erros < 3 && Status.num_lixo < 5) {
-        system("cls");
+        system("clear");
         printf("-------------------------\n");
         printf("    ***FIM DE JOGO***\n");
         printf("       Parabens!!\n");
@@ -85,7 +163,7 @@ int Verificar_fim (struct desempenho Status) {
         return 1;
     }
     else if (Status.num_erros == 3) {
-        system("cls");
+        system("clear");
         printf("-------------------------\n");
         printf("    ***FIM DE JOGO***\n");
         printf("    Pedidos errados: %d\n", Status.num_erros);
@@ -93,7 +171,7 @@ int Verificar_fim (struct desempenho Status) {
         return -1;
     }
     else if (Status.num_lixo == 5) {
-        system("cls");
+        system("clear");
         printf("-------------------------\n");
         printf("    ***FIM DE JOGO***\n");
         printf("    Pedidos jogados no lixo: %d\n", Status.num_lixo);
@@ -189,9 +267,10 @@ void Imprimir_fila (struct lista_dupla P) {
 }
 
 void Imprimir(char mapa[7][23], struct lista_dupla Fila_pedidos, struct desempenho Status, struct topo Pilha_igredientes) {
-    system("cls");
+    system("clear");
     int row, column;
     for (row = 0; row < 7; row++) {
+        printf("                     ");
         for (column = 0; column < 23; column++) {
                 printf("%c", mapa[row][column]);
         }
@@ -212,7 +291,7 @@ void Imprimir(char mapa[7][23], struct lista_dupla Fila_pedidos, struct desempen
 }
 
 int Checar_troca (char mapa [7][23], char mov, struct localizacao *Posicao) {
-    if (mov == 'a') {                    //<-- MOVE P/ ESQUERDA
+    if (mov == 'a' || mov == 'D') {                    //<-- MOVE P/ ESQUERDA
         if (mapa[Posicao->row][Posicao->column-1] == '|')       
             return -1;                                      
         else if (mapa[Posicao->row][Posicao->column-1] == ']')  
@@ -220,7 +299,7 @@ int Checar_troca (char mapa [7][23], char mov, struct localizacao *Posicao) {
         else 
             return 0;                                             
     }
-    else if (mov == 'd') {               //<-- MOVE P/ DIREITA
+    else if (mov == 'd' || mov == 'C') {               //<-- MOVE P/ DIREITA
         if(mapa[Posicao->row][Posicao->column+1] == '|')        
             return -1;
         else if(mapa[Posicao->row][Posicao->column+1] == '[')   
@@ -230,7 +309,7 @@ int Checar_troca (char mapa [7][23], char mov, struct localizacao *Posicao) {
         else 
             return 0;
     }
-    else if (mov == 'w') {               //<-- MOVE P/ CIMA
+    else if (mov == 'w' || mov == 'A') {               //<-- MOVE P/ CIMA
         if(mapa[Posicao->row-1][Posicao->column] == 'F')         
             return 1;
         else if(mapa[Posicao->row-1][Posicao->column] == 'o')
@@ -242,7 +321,7 @@ int Checar_troca (char mapa [7][23], char mov, struct localizacao *Posicao) {
         else 
             return -1;                                       
     }
-    else if (mov == 's') {               //<-- MOVE P/ BAIXO
+    else if (mov == 's' || mov == 'B') {               //<-- MOVE P/ BAIXO
         if((mapa[Posicao->row+1][Posicao->column] == '[') || (mapa[Posicao->row+1][Posicao->column] == ']') || (mapa[Posicao->row+1][Posicao->column] == '-'))        
             return -1;
         else if(mapa[Posicao->row+1][Posicao->column] == ' ')   
@@ -260,28 +339,28 @@ int Checar_troca (char mapa [7][23], char mov, struct localizacao *Posicao) {
 
 void Troca (char mapa [7][23], char mov, struct localizacao *Posicao) {
 
-    if (mov == 'a') {                    //<-- MOVE P/ ESQUERDA
+    if (mov == 'a' || mov == 'D') {                    //<-- MOVE P/ ESQUERDA
         char aux = mapa[Posicao->row][Posicao->column];
         mapa[Posicao->row][Posicao->column] = mapa[Posicao->row][Posicao->column-1];
         mapa[Posicao->row][Posicao->column-1] = aux;
         Posicao->row = Posicao->row;
         Posicao->column = Posicao->column-1;
     }
-    else if (mov == 'd') {               //<-- MOVE P/ DIREITA
+    else if (mov == 'd' || mov == 'C') {               //<-- MOVE P/ DIREITA
         char aux = mapa[Posicao->row][Posicao->column];
         mapa[Posicao->row][Posicao->column] = mapa[Posicao->row][Posicao->column+1];
         mapa[Posicao->row][Posicao->column+1] = aux;
         Posicao->row = Posicao->row;
         Posicao->column = Posicao->column+1;
     }
-    else if (mov == 'w') {               //<-- MOVE P/ CIMA
+    else if (mov == 'w' || mov == 'A') {               //<-- MOVE P/ CIMA
         char aux = mapa[Posicao->row][Posicao->column];
         mapa[Posicao->row][Posicao->column] = mapa[Posicao->row-1][Posicao->column];
         mapa[Posicao->row-1][Posicao->column] = aux;      
         Posicao->row = Posicao->row-1;
         Posicao->column = Posicao->column;                       
     }
-    else if (mov == 's') {               //<-- MOVE P/ BAIXO
+    else if (mov == 's' || mov == 'B') {               //<-- MOVE P/ BAIXO
         char aux = mapa[Posicao->row][Posicao->column];
         mapa[Posicao->row][Posicao->column] = mapa[Posicao->row+1][Posicao->column];
         mapa[Posicao->row+1][Posicao->column] = aux;      
@@ -295,57 +374,45 @@ void Empilhar (struct topo *Pilha_igredientes, char mapa [7][23], struct localiz
     case 'a':
         Push(Pilha_igredientes, mapa[Posicao->row][Posicao->column-2]);
         break;
+    case 'D':
+        Push(Pilha_igredientes, mapa[Posicao->row][Posicao->column-2]);
+        break;
     case 'd':
+        Push(Pilha_igredientes, mapa[Posicao->row][Posicao->column+2]);
+        break;
+    case 'C':
         Push(Pilha_igredientes, mapa[Posicao->row][Posicao->column+2]);
         break;
     case 'w':
         Push(Pilha_igredientes, mapa[Posicao->row-1][Posicao->column]);
         break;
+    case 'A':
+        Push(Pilha_igredientes, mapa[Posicao->row-1][Posicao->column]);
+        break;
     case 's':
+        Push(Pilha_igredientes, mapa[Posicao->row+1][Posicao->column]);
+        break;
+    case 'B':
         Push(Pilha_igredientes, mapa[Posicao->row+1][Posicao->column]);
         break;
     }
 }
 
 void destroiRefeicao (struct topo *Pilha_igredientes) {
-    if (Pilha_igredientes->tam > 1) {
-        struct nodo_simples *apagar = Pilha_igredientes->fim;
-        struct nodo_simples *aux;
-        int i = 1;
-        while (Pilha_igredientes->tam > 0) {
-            apagar = Pilha_igredientes->fim;
-            aux = Pilha_igredientes->inicio;
-            while (i <= Pilha_igredientes->tam) {
-                aux = aux->prox;
-                i++;
-            }
-            Pilha_igredientes->fim = aux;
-            free(apagar);
-            Pilha_igredientes->tam = Pilha_igredientes->tam - 1;
-        };
-        Pilha_igredientes->tam = 0;
-        Pilha_igredientes->cabeca = NULL;
-        Pilha_igredientes->inicio = NULL;
-        Pilha_igredientes->fim = NULL;
-    }
-    else if (Pilha_igredientes->tam == 1) {
-        Pilha_igredientes->tam = 0;
-        Pilha_igredientes->cabeca = NULL;
-        Pilha_igredientes->inicio = NULL;
-        Pilha_igredientes->fim = NULL;
-
-    }
+    int i = 1;
+    while ( i <= Pilha_igredientes->tam) 
+        Pop(Pilha_igredientes);
     
 }
 
 int verificaPedido(struct topo *Pilha_igredientes, struct lista_dupla *Fila_pedidos) {
-    printf("\nCodigo: %i\n",Fila_pedidos->inicio->codigo);
-    switch (Fila_pedidos->inicio->codigo) {
+    printf("\nCodigo: %i\n",Fila_pedidos->cabeca->codigo);
+    switch (Fila_pedidos->cabeca->codigo) {
 
         case 1: {      //X-Burguer
             char igredientes[4] = {"pHQP"};
             int i;
-            struct nodo_simples *aux = Pilha_igredientes->inicio;
+            struct nodo_simples *aux = Pilha_igredientes->cabeca;
             for (i = 0; i < 4; i++) {
                 if (igredientes[i] != aux->igrediente)
                     return -1;
@@ -356,7 +423,7 @@ int verificaPedido(struct topo *Pilha_igredientes, struct lista_dupla *Fila_pedi
         case 2: {      //X-Salada
             char igredientes[5] = {"pHQSP"};
             int i;
-            struct nodo_simples *aux = Pilha_igredientes->inicio;
+            struct nodo_simples *aux = Pilha_igredientes->cabeca;
             for (i = 0; i < 5; i++) {
                 if (igredientes[i] != aux->igrediente)
                     return -1;
@@ -367,7 +434,7 @@ int verificaPedido(struct topo *Pilha_igredientes, struct lista_dupla *Fila_pedi
         case 3: {      //Combo 1
             char igredientes[6] = {"pHQPFR"};
             int i;
-            struct nodo_simples *aux = Pilha_igredientes->inicio;
+            struct nodo_simples *aux = Pilha_igredientes->cabeca;
             for (i = 0; i < 6; i++) {
                 if (igredientes[i] != aux->igrediente)
                     return -1;
@@ -378,7 +445,7 @@ int verificaPedido(struct topo *Pilha_igredientes, struct lista_dupla *Fila_pedi
         case 4: {      //Combo 2
             char igredientes[7] = {"pHQSPFR"};
             int i;
-            struct nodo_simples *aux = Pilha_igredientes->inicio;
+            struct nodo_simples *aux = Pilha_igredientes->cabeca;
             for (i = 0; i < 7; i++) {
                 if (igredientes[i] != aux->igrediente)
                     return -1;
@@ -389,7 +456,7 @@ int verificaPedido(struct topo *Pilha_igredientes, struct lista_dupla *Fila_pedi
         case 5: {      //Vegetariano
             char igredientes[5] = {"pQPFR"};
             int i;
-            struct nodo_simples *aux = Pilha_igredientes->inicio;
+            struct nodo_simples *aux = Pilha_igredientes->cabeca;
             for (i = 0; i < 5; i++) {
                 if (igredientes[i] != aux->igrediente)
                     return -1;
@@ -400,7 +467,7 @@ int verificaPedido(struct topo *Pilha_igredientes, struct lista_dupla *Fila_pedi
         case 6: {      //Vegano
             char igredientes[3] = {"SFR"};
             int i;
-            struct nodo_simples *aux = Pilha_igredientes->inicio;
+            struct nodo_simples *aux = Pilha_igredientes->cabeca;
             for (i = 0; i < 3; i++) {
                 if (igredientes[i] != aux->igrediente)
                     return -1;
@@ -412,16 +479,23 @@ int verificaPedido(struct topo *Pilha_igredientes, struct lista_dupla *Fila_pedi
     return 0;
 }
 
-void Andar (char mapa[7][23], struct desempenho *Status, struct localizacao *Posicao, struct topo *Pilha_igredientes, struct lista_dupla *Fila_pedidos) {
+int Andar (char mapa[7][23], struct desempenho *Status, struct localizacao *Posicao, struct topo *Pilha_igredientes, struct lista_dupla *Fila_pedidos) {
     
-    printf("\nMovimento: ");
+    printf("\nMovimento [a,s,d,w ou setas]: ");
+    char string_mov[10];
     char mov;
-    scanf("%s", &mov);
+    scanf("%s", string_mov);
+
+    if (string_mov[0] == 'a' || (string_mov[0] == 'w' || (string_mov[0] == 's' || string_mov[0] == 'd')))
+        mov = string_mov[0];
+    else {
+        mov = string_mov[2];
+    }
                  
     int operacao = Checar_troca(mapa, mov, Posicao);
     if (operacao == 4) {
         while (operacao == 4) {
-            printf("Movimento:");
+            printf("Movimento [a,s,d,w ou setas]:");
             scanf("%s", &mov);
             operacao = Checar_troca(mapa, mov, Posicao);
         }
@@ -443,6 +517,7 @@ void Andar (char mapa[7][23], struct desempenho *Status, struct localizacao *Pos
                     Status->num_erros = Status->num_erros + 1;
                 Excluir_nodo_fila(Fila_pedidos);
                 destroiRefeicao(Pilha_igredientes);
+                return 1;
             }
             break;
         case 3:                                             //descartar pedido
@@ -456,4 +531,5 @@ void Andar (char mapa[7][23], struct desempenho *Status, struct localizacao *Pos
             break;
 
     }
+    return 0;
 }
